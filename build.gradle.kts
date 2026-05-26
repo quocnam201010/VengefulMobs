@@ -1,6 +1,8 @@
+import java.net.URLClassLoader
+
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.5.11"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
 }
 
 group = "dev.melncat"
@@ -8,13 +10,17 @@ version = "1.1.1"
 description = "Makes passive mobs fight back."
 
 java {
-    // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    // Configure the java toolchain. This allows gradle to auto-provision JDK 21 on systems that only have JDK 8 installed for example.
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+}
+
+repositories {
+    mavenCentral()
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
-    // paperweight.devBundle("com.example.paperfork", "1.19.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 }
 
 tasks {
@@ -28,7 +34,7 @@ tasks {
         
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
         // See https://openjdk.java.net/jeps/247 for more information.
-        options.release.set(17)
+        options.release.set(21)
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
@@ -45,3 +51,5 @@ tasks {
     }
      */
 }
+
+

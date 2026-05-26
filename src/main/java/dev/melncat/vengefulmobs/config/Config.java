@@ -73,15 +73,21 @@ public class Config {
 		}
 		
 		private final double damage;
+		private final double speed;
 		private final Mode mode;
 		
-		private MobConfig(double damage, Mode mode) {
+		private MobConfig(double damage, double speed, Mode mode) {
 			this.damage = damage;
+			this.speed = speed;
 			this.mode = mode;
 		}
 		
 		public double damage() {
 			return damage;
+		}
+		
+		public double speed() {
+			return speed;
 		}
 		
 		public Mode mode() {
@@ -91,6 +97,7 @@ public class Config {
 		protected static MobConfig makeDefault(ConfigurationSection section) {
 			return new MobConfig(
 				section.getDouble("damage"),
+				section.getDouble("speed"),
 				Mode.valueOf(Objects.requireNonNull(section.getString("mode")).toUpperCase())
 			);
 		}
@@ -98,6 +105,7 @@ public class Config {
 		protected static MobConfig fromSection(ConfigurationSection section, MobConfig defaultConfig) throws IllegalArgumentException {
 			return new MobConfig(
 				section.getDouble("damage", defaultConfig.damage()),
+				section.getDouble("speed", defaultConfig.speed()),
 				Optional.ofNullable(section.getString("mode")).map(x -> Mode.valueOf(x.toUpperCase())).orElse(defaultConfig.mode())
 			);
 		}

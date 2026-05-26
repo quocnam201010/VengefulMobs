@@ -31,6 +31,8 @@ mobs:
   default:
     # The attack damage (in half hearts)
     damage: 2.0
+    # The speed multiplier when chasing/attacking targets (1.0 is normal speed)
+    speed: 1.25
     # The mode of retaliation. Can be RETALIATE, RETALIATE_ONCE, RETALIATE_WITH_SUPPORT, HOSTILE, MURDER_ALL, or MURDER_OTHERS
     # RETALIATE - Fight back against attackers
     # RETALIATE_ONCE - Fight back, but only once
@@ -45,6 +47,7 @@ mobs:
   # [!] Adding a mob to this list does not enable it! You must add it to the enabled list as well.
     chicken:
       damage: 1.5
+      speed: 1.4
     cow:
       damage: 5.0
     cod:

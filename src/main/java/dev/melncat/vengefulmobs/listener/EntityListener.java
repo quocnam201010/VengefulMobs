@@ -37,14 +37,16 @@ public class EntityListener implements Listener {
 		if (!plugin.config().isEnabled(entity.getType())) return;
 		if (!(entity instanceof Creature mob)) return; // This should never happen
 		Config.MobConfig config = plugin.config().fromType(entity.getType());
-		mob.registerAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
-		Objects.requireNonNull(mob.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE))
+		if (mob.getAttribute(Attribute.ATTACK_DAMAGE) == null) {
+			mob.registerAttribute(Attribute.ATTACK_DAMAGE);
+		}
+		Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE))
 			.setBaseValue(config.damage());
 		MobGoals goals = Bukkit.getMobGoals();
 		net.minecraft.world.entity.Entity nmsEntity = (net.minecraft.world.entity.Entity)
 			mob.getClass().getMethod("getHandle").invoke(mob);
 		if (!(nmsEntity instanceof PathfinderMob handle)) return;
-		goals.addGoal(mob, 1, new PaperVanillaGoal<>(new MeleeAttackGoal(handle, 1.0, false)));
+		goals.addGoal(mob, 1, new PaperVanillaGoal<>(new MeleeAttackGoal(handle, config.speed(), false)));
 		goals.removeGoal(mob, VanillaGoal.PANIC);
 		switch (config.mode()) {
 			case RETALIATE, RETALIATE_ONCE -> goals.addGoal(mob, 1, new PaperVanillaGoal<>(
@@ -86,11 +88,11 @@ public class EntityListener implements Listener {
 				new NearestAttackableTargetGoal<>(handle, Player.class, true)
 			));
 			case MURDER_ALL -> goals.addGoal(mob, 3, new PaperVanillaGoal<>(
-				new NearestAttackableTargetGoal<>(handle, LivingEntity.class, 10, true, true, LivingEntity::attackable)
+				new NearestAttackableTargetGoal<>(handle, LivingEntity.class, 10, true, true, (target, level) -> target.attackable())
 			));
 			case MURDER_OTHERS -> goals.addGoal(mob, 3, new PaperVanillaGoal<>(
 				new NearestAttackableTargetGoal<>(handle, LivingEntity.class, 10, true, true,
-					e -> e.attackable() && e.getType() != handle.getType())
+					(target, level) -> target.attackable() && target.getType() != handle.getType())
 			));
 		}
 	}
