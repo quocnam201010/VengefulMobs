@@ -13,15 +13,19 @@ import net.minecraft.world.entity.player.Player;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 
 public class EntityListener implements Listener {
@@ -42,6 +46,52 @@ public class EntityListener implements Listener {
 		}
 		Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE))
 			.setBaseValue(config.damage());
+
+		// Apply custom attribute modifiers configured for this entity type
+		List<Config.AttributeModifierConfig> customModifiers = plugin.config().getAttributeModifiers(entity.getType());
+		for (Config.AttributeModifierConfig mod : customModifiers) {
+			AttributeInstance attrInst = mob.getAttribute(mod.attribute());
+			if (attrInst == null) {
+				try {
+					mob.registerAttribute(mod.attribute());
+					attrInst = mob.getAttribute(mod.attribute());
+				} catch (IllegalArgumentException e) {
+					plugin.getLogger().warning("Could not register attribute " + mod.attribute().getKey().toString() + " for " + entity.getType().name() + ": " + e.getMessage());
+				}
+			}
+			if (attrInst != null) {
+				boolean exists = false;
+				for (AttributeModifier existingMod : attrInst.getModifiers()) {
+					if (existingMod.getKey().equals(mod.id())) {
+						exists = true;
+						break;
+					}
+				}
+				if (!exists) {
+					AttributeModifier newMod = new AttributeModifier(
+						mod.id(),
+						mod.value(),
+						mod.operator(),
+						EquipmentSlotGroup.ANY
+					);
+					if (mod.attribute() == Attribute.MAX_HEALTH) {
+						double oldMax = attrInst.getValue();
+						double currentHealth = mob.getHealth();
+						attrInst.addModifier(newMod);
+						double newMax = attrInst.getValue();
+						if (oldMax > 0) {
+							double newHealth = currentHealth * (newMax / oldMax);
+							mob.setHealth(Math.max(0.0, Math.min(newHealth, newMax)));
+						} else {
+							mob.setHealth(newMax);
+						}
+					} else {
+						attrInst.addModifier(newMod);
+					}
+				}
+			}
+		}
+
 		MobGoals goals = Bukkit.getMobGoals();
 		net.minecraft.world.entity.Entity nmsEntity = (net.minecraft.world.entity.Entity)
 			mob.getClass().getMethod("getHandle").invoke(mob);

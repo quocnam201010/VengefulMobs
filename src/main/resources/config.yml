@@ -68,3 +68,27 @@ mobs:
     glow_squid:
       damage: 3.2
       mode: HOSTILE
+
+# A new configuration section to apply attribute modifiers to all loaded entities of specified types.
+# Format:
+# attribute-modifiers:
+#   - mob: <mob_type>
+#     attribute: <attribute_id>
+#     id: "<namespace>:<identifier>"
+#     value: <number>
+#     operator: <add_value|add_multiplied_base|add_multiplied_total>
+#
+# Operators:
+# - add_value: Adds the value directly to the attribute.
+# - add_multiplied_base: Adds value * base to the attribute.
+# - add_multiplied_total: Multiplies the total value by (1 + value).
+#
+# Example:
+# attribute-modifiers:
+#   - mob: cow
+#     attribute: max_health
+#     id: "namespace:hello"
+#     value: 10
+#     operator: add_value
+attribute-modifiers: []
+
