@@ -38,14 +38,7 @@ public class EntityListener implements Listener {
 	@EventHandler
 	private void on(EntityAddToWorldEvent event) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Entity entity = event.getEntity();
-		if (!plugin.config().isEnabled(entity.getType())) return;
-		if (!(entity instanceof Creature mob)) return; // This should never happen
-		Config.MobConfig config = plugin.config().fromType(entity.getType());
-		if (mob.getAttribute(Attribute.ATTACK_DAMAGE) == null) {
-			mob.registerAttribute(Attribute.ATTACK_DAMAGE);
-		}
-		Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE))
-			.setBaseValue(config.damage());
+		if (!(entity instanceof Creature mob)) return;
 
 		// Apply custom attribute modifiers configured for this entity type
 		List<Config.AttributeModifierConfig> customModifiers = plugin.config().getAttributeModifiers(entity.getType());
@@ -91,6 +84,14 @@ public class EntityListener implements Listener {
 				}
 			}
 		}
+
+		if (!plugin.config().isEnabled(entity.getType())) return;
+		Config.MobConfig config = plugin.config().fromType(entity.getType());
+		if (mob.getAttribute(Attribute.ATTACK_DAMAGE) == null) {
+			mob.registerAttribute(Attribute.ATTACK_DAMAGE);
+		}
+		Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE))
+			.setBaseValue(config.damage());
 
 		MobGoals goals = Bukkit.getMobGoals();
 		net.minecraft.world.entity.Entity nmsEntity = (net.minecraft.world.entity.Entity)
