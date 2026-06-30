@@ -20,6 +20,7 @@ public class Config {
 		this.plugin = plugin;
 	}
 	
+	private boolean vengefulMobsEnabled;
 	private MobConfig defaultConfig;
 	private EnumSet<EntityType> enabled;
 	
@@ -27,6 +28,7 @@ public class Config {
 	private final EnumMap<EntityType, List<AttributeModifierConfig>> attributeModifiers = new EnumMap<>(EntityType.class);
 	
 	public void loadConfig(ConfigurationSection section) {
+		vengefulMobsEnabled = section.getBoolean("enable-vengeful-mobs", true);
 		ConfigurationSection mobs = Objects.requireNonNull(section.getConfigurationSection("mobs"));
 		defaultConfig = MobConfig.makeDefault(Objects.requireNonNull(mobs.getConfigurationSection("default")));
 		try {
@@ -94,6 +96,10 @@ public class Config {
 		}
 	}
 	
+	public boolean isVengefulMobsEnabled() {
+		return vengefulMobsEnabled;
+	}
+
 	public boolean isEnabled(EntityType type) {
 		return enabled.contains(type);
 	}

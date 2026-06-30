@@ -88,7 +88,7 @@ public class EntityListener implements Listener {
 					}
 				}
 
-				if (!plugin.config().isEnabled(entity.getType())) return;
+				if (!plugin.config().isVengefulMobsEnabled() || !plugin.config().isEnabled(entity.getType())) return;
 				Config.MobConfig config = plugin.config().fromType(entity.getType());
 				if (mob.getAttribute(Attribute.ATTACK_DAMAGE) == null) {
 					mob.registerAttribute(Attribute.ATTACK_DAMAGE);
@@ -158,7 +158,7 @@ public class EntityListener implements Listener {
 	@EventHandler
 	private void on(EntityDamageByEntityEvent event) {
 		Entity damager = event.getDamager();
-		if (!plugin.config().isEnabled(damager.getType())) return;
+		if (!plugin.config().isVengefulMobsEnabled() || !plugin.config().isEnabled(damager.getType())) return;
 		if (!(damager instanceof Creature c)) return;
 		Config.MobConfig config = plugin.config().fromType(damager.getType());
 		if (config.mode() == Config.MobConfig.Mode.RETALIATE_ONCE) {

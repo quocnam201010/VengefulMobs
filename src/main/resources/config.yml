@@ -1,3 +1,7 @@
+# Central toggle for the vengeful mobs combat functionality (default/override damage, speed, and retaliation goals).
+# If false, mobs will not retaliate, but configured attribute modifiers will still apply.
+enable-vengeful-mobs: true
+
 mobs:
   # The list of mobs to enable. You can add or remove from this list as needed.
   enabled:
